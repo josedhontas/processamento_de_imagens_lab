@@ -14,19 +14,18 @@ def imread(filename):
     return im
 
 def imshow(im):
-    plt.figure(figsize=(im.shape[1]/100, im.shape[0]/100), dpi=100)  # Define o tamanho da figura com base nas dimensões da imagem
-    plot = plt.imshow(im, origin="upper")
-    plot.set_interpolation('nearest')
-    plt.axis('off')  # Desabilita os eixos
-    #plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  # Elimina as margens
+    plt.figure(figsize=(im.shape[1]/100, im.shape[0]/100), dpi=100)
+    
+    plt.imshow(im, origin="upper")
+    plt.axis('off') 
     plt.tight_layout()
 
-    # Salvando a figura em um buffer
     img_buffer = io.BytesIO()
-    plt.savefig(img_buffer, format='jpg')
+    plt.savefig(img_buffer, format='jpg', bbox_inches='tight', pad_inches=0)
     img_buffer.seek(0)
 
     return img_buffer
+
 
 '''def imshow(im):
     plot = plt.imshow(im, origin="upper")
