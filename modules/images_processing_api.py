@@ -15,16 +15,21 @@ def imread(filename):
 
 def imshow(im):
     plt.figure(figsize=(im.shape[1]/100, im.shape[0]/100), dpi=100)
-    
-    plt.imshow(im, origin="upper")
+
+    if nchannels(im) == 1:  
+        plt.imshow(im, cmap='gray', origin="upper")
+    else:
+        plt.imshow(im, origin="upper")
+
     plt.axis('off') 
     plt.tight_layout()
 
     img_buffer = io.BytesIO()
-    plt.savefig(img_buffer, format='jpg', bbox_inches='tight', pad_inches=0)
+    plt.savefig(img_buffer, format='png', bbox_inches='tight', pad_inches=0)
     img_buffer.seek(0)
 
     return img_buffer
+
 
 
 '''def imshow(im):

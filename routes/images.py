@@ -27,3 +27,9 @@ def get_thresh_image(image_id):
     image = imshow(img)
     return send_file(image, mimetype='image/png')
 
+@images_bp.route('/gray/<int:image_id>')
+def get_gray_image(image_id):
+    image_path = f'img/{image_id}.jpg'
+    img = imreadgray(image_path)
+    image = imshow(img)
+    return send_file(image, mimetype='image/png')
