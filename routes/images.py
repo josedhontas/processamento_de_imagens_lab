@@ -49,3 +49,13 @@ def get_blur_image(image_id):
     img = blur(img)
     image = imshow(img)
     return send_file(image, mimetype='image/png')
+
+@images_bp.route('/erode/<int:image_id>')
+def get_erode_image(image_id):
+    image_path = f'img/{image_id}.jpg'
+    img = imread(image_path)
+    element = seSquare3()
+    img = erode(img, element)
+    image = imshow(img)
+    return send_file(image, mimetype='image/png')
+
