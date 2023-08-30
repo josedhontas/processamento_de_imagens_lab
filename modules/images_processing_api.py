@@ -157,20 +157,26 @@ def seCross3():
                         [0, 1, 0]])
     return element
 
-'''
+
 def erode(image, element):
     element_height, element_width = element.shape
-    image_height, image_width = image.shape
+    image_height, image_width = image.shape[:2] 
+    num_channels = 1 if len(image.shape) == 2 else image.shape[2] 
+
     output = np.zeros_like(image)
     
     pad_height = element_height // 2
     pad_width = element_width // 2
     
-    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width)), mode='constant', constant_values=255)
+    padding = ((pad_height, pad_height), (pad_width, pad_width))
+    if num_channels > 1:
+        padding += ((0, 0),) 
+
+    padded_image = np.pad(image, padding, mode='constant', constant_values=255)
     
     for y in range(pad_height, image_height + pad_height):
         for x in range(pad_width, image_width + pad_width):
-            if element[y - pad_height, x - pad_width] == 1:
+            if np.array_equal(element, seSquare3()):
                 region = padded_image[y - pad_height:y + pad_height + 1, x - pad_width:x + pad_width + 1]
                 output[y - pad_height, x - pad_width] = np.min(region)
             else:
@@ -178,6 +184,8 @@ def erode(image, element):
     
     return output
 
+
+'''
 def dilate(image, element):
     element_height, element_width = element.shape
     image_height, image_width = image.shape

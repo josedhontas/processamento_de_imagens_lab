@@ -33,3 +33,19 @@ def get_gray_image(image_id):
     img = imreadgray(image_path)
     image = imshow(img)
     return send_file(image, mimetype='image/png')
+
+@images_bp.route('/histeq/<int:image_id>')
+def get_histeq_image(image_id):
+    image_path = f'img/{image_id}.jpg'
+    img = imread(image_path)
+    img = histeq(img)
+    image = imshow(img)
+    return send_file(image, mimetype='image/png')
+
+@images_bp.route('/blur/<int:image_id>')
+def get_blur_image(image_id):
+    image_path = f'img/{image_id}.jpg'
+    img = imread(image_path)
+    img = blur(img)
+    image = imshow(img)
+    return send_file(image, mimetype='image/png')
