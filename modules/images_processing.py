@@ -147,7 +147,7 @@ def seCross3():
 def erode(image, element):
     element_height, element_width = element.shape
     image_height, image_width = image.shape[:2] 
-    num_channels = 1 if len(image.shape) == 2 else image.shape[2] 
+    num_channels = nchannels(image)
 
     output = np.zeros_like(image)
     
