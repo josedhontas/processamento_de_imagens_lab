@@ -1,5 +1,5 @@
 from flask import Blueprint, send_file
-from module.bilioteca import *
+from modules.images_processing_api import *
 import os
 
 images_bp = Blueprint('images', __name__)
