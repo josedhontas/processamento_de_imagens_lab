@@ -23,7 +23,7 @@ def get_negative_image(image_id):
 def get_thresh_image(image_id):
     image_path = f'img/{image_id}.jpg'
     img = imread(image_path)
-    img = thresh(img, 40)
+    img = thresh(img, 130)
     image = imshow(img)
     return send_file(image, mimetype='image/png')
 
