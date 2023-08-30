@@ -72,7 +72,7 @@ def contrast(im, r, m):
 
 def hist(im):
     if nchannels(im) == 1:
-        hist_values = np.bincount(im.flattern(), minlength=256)
+        hist_values = np.bincount(im.flatten(), minlength=256)
     else:
         hist_values = np.column_stack([np.bincount(im[:,:,i].flatten(), minlength=256) for i in range(3)])
     
@@ -86,7 +86,7 @@ def showhist(hist_values, binsize=1):
     num_bins = hist_length // binsize
     binned_hist = hist_values[:num_bins * binsize].reshape(num_bins, binsize, -1).sum(axis=1)
     
-    if hist_values.shape[1] == 3:
+    if nchannels(hist_values) == 3:
         colors = ['red', 'green', 'blue']
         for i, color in enumerate(colors):
             plt.bar(range(num_bins), binned_hist[:, i], color=color, alpha=0.7, label=color)
@@ -97,19 +97,101 @@ def showhist(hist_values, binsize=1):
     plt.ylabel('Frequência')
     plt.legend()
     plt.show()
-    if binsize < 1:
-        raise ValueError("O valor de binsize deve ser pelo menos 1.")
+
+def histeq(im):
+    hist_values = hist(im)
+    cdf = hist_values.cumsum()
+    cdf_min = cdf.min()
+
+    new_intensity = np.round(((cdf - cdf_min)/ (im.size - cdf_min))*255)
+
+    equalized_image = new_intensity[im]
+
+    return equalized_image.astype(np.uint8)
+
+def convolve(image, kernel):
+    kernel_height, kernel_width = kernel.shape
+    image_height, image_width, num_channels = image.shape
+    output = np.zeros_like(image)
     
-    hist_values_grouped = [sum(hist_values[i:i+binsize]) for i in range(0, len(hist_values), binsize)]
+    pad_height = kernel_height // 2
+    pad_width = kernel_width // 2
     
-    if hist_values.shape[1] == 3:  
-        colors = ['red', 'green', 'blue']
-        for i, color in enumerate(colors):
-            plt.bar(range(0, 256, binsize), hist_values_grouped[i::3], color=color, alpha=0.7, label=color)
-    else:  
-        plt.bar(range(0, 256, binsize), hist_values_grouped, color='gray', alpha=0.7, label='gray')
+    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width), (0, 0)), mode='edge')
     
-    plt.xlabel('Intensidade de Cinza')
-    plt.ylabel('Frequência')
-    plt.legend()
-    plt.show()
+    for y in range(image_height):
+        for x in range(image_width):
+            for c in range(num_channels):
+                region = padded_image[y:y + kernel_height, x:x + kernel_width, c]
+                output[y, x, c] = np.sum(region * kernel)
+    
+    return output
+
+
+def maskBlur():
+    mask = np.array([[1, 2, 1],
+                     [2, 4, 2],
+                     [1, 2, 1]])
+    mask = mask / 16.0  
+    return mask
+
+def blur(image):
+    blur_mask = maskBlur()
+    blurred_image = convolve(image, blur_mask)
+    return blurred_image
+
+def seSquare3():
+    element = np.array([[1, 1, 1],
+                        [1, 1, 1],
+                        [1, 1, 1]])
+    return element
+
+def seCross3():
+    element = np.array([[0, 1, 0],
+                        [1, 1, 1],
+                        [0, 1, 0]])
+    return element
+
+'''
+def erode(image, element):
+    element_height, element_width = element.shape
+    image_height, image_width = image.shape
+    output = np.zeros_like(image)
+    
+    pad_height = element_height // 2
+    pad_width = element_width // 2
+    
+    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width)), mode='constant', constant_values=255)
+    
+    for y in range(pad_height, image_height + pad_height):
+        for x in range(pad_width, image_width + pad_width):
+            if element[y - pad_height, x - pad_width] == 1:
+                region = padded_image[y - pad_height:y + pad_height + 1, x - pad_width:x + pad_width + 1]
+                output[y - pad_height, x - pad_width] = np.min(region)
+            else:
+                output[y - pad_height, x - pad_width] = padded_image[y, x]
+    
+    return output
+
+def dilate(image, element):
+    element_height, element_width = element.shape
+    image_height, image_width = image.shape
+    output = np.zeros_like(image)
+    
+    pad_height = element_height // 2
+    pad_width = element_width // 2
+    
+    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width)), mode='constant', constant_values=0)
+    
+    reflected_element = np.flipud(np.fliplr(element))  # Espelhando o elemento estruturante
+    
+    for y in range(pad_height, image_height + pad_height):
+        for x in range(pad_width, image_width + pad_width):
+            if element[y - pad_height, x - pad_width] == 1:
+                region = padded_image[y - pad_height:y + pad_height + 1, x - pad_width:x + pad_width + 1]
+                output[y - pad_height, x - pad_width] = np.max(region)
+            else:
+                output[y - pad_height, x - pad_width] = padded_image[y, x]
+    
+    return output
+    '''

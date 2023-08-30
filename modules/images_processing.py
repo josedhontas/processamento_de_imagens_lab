@@ -102,20 +102,22 @@ def histeq(im):
 
 def convolve(image, kernel):
     kernel_height, kernel_width = kernel.shape
-    image_height, image_width = image.shape
+    image_height, image_width, num_channels = image.shape
     output = np.zeros_like(image)
     
     pad_height = kernel_height // 2
     pad_width = kernel_width // 2
     
-    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width)), mode='edge')
+    padded_image = np.pad(image, ((pad_height, pad_height), (pad_width, pad_width), (0, 0)), mode='edge')
     
     for y in range(image_height):
         for x in range(image_width):
-            region = padded_image[y:y + kernel_height, x:x + kernel_width]
-            output[y, x] = np.sum(region * kernel)
+            for c in range(num_channels):
+                region = padded_image[y:y + kernel_height, x:x + kernel_width, c]
+                output[y, x, c] = np.sum(region * kernel)
     
     return output
+
 
 def maskBlur():
     mask = np.array([[1, 2, 1],
