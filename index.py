@@ -7,7 +7,7 @@ app.register_blueprint(images_bp, url_prefix='/images')
 
 @app.route('/')
 def home():
-    return 'Hello, World!'
+    return 'Processamento de imagens'
 
 if __name__ == '__main__':
     app.run(debug=True)
