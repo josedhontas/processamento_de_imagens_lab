@@ -1,7 +1,7 @@
 from modules.images_processing import *
 
 img = imread('img/4.jpg')
-img = thresh(img, 130)
+img = erode(img, seCross3())
 #histo = hist(img)
 #showhist(histo)
 #img = contrast(img, 10, 10)

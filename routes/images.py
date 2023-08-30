@@ -59,3 +59,13 @@ def get_erode_image(image_id):
     image_out = imshow(image_erode)
     return send_file(image_out, mimetype='image/png')
 
+@images_bp.route('/dilate/<int:image_id>')
+def get_dilate_image(image_id):
+    image_path = f'img/{image_id}.jpg'
+    image = imread(image_path)
+    element = seSquare3()
+    image_dilate = dilate(image, element)
+    image_out = imshow(image_dilate)
+    return send_file(image_out, mimetype='image/png')
+
+
