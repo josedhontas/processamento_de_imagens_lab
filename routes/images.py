@@ -1,8 +1,26 @@
 from flask import Blueprint, send_file
+from flask import jsonify
 from modules.images_processing_api import *
 import os
 
 images_bp = Blueprint('images', __name__)
+
+@images_bp.route('/all')
+def get_all_images():
+    image_info_list = []
+    image_folder = 'img' 
+    
+    for filename in os.listdir(image_folder):
+        if filename.endswith('.jpg'):
+            image_id = int(filename.split('.')[0])
+            image_url = f'https://image-api.josedhonatas.ninja/images/{image_id}'         
+            image_info = {
+                'image_id': image_id,
+                'image_url': image_url
+            }
+            image_info_list.append(image_info)
+    
+    return jsonify(image_info_list)
 
 @images_bp.route('/<int:image_id>')
 def get_image(image_id):
@@ -54,7 +72,7 @@ def get_blur_image(image_id):
 def get_erode_image(image_id):
     image_path = f'img/{image_id}.jpg'
     image = imread(image_path)
-    element = seSquare3()
+    element = seCross3()
     image_erode = erode(image, element)
     image_out = imshow(image_erode)
     return send_file(image_out, mimetype='image/png')
@@ -63,7 +81,7 @@ def get_erode_image(image_id):
 def get_dilate_image(image_id):
     image_path = f'img/{image_id}.jpg'
     image = imread(image_path)
-    element = seSquare3()
+    element = seCross3()
     image_dilate = dilate(image, element)
     image_out = imshow(image_dilate)
     return send_file(image_out, mimetype='image/png')
